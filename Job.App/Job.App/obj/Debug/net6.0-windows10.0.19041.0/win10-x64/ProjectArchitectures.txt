@@ -1,0 +1,1 @@
+C:\THDmvc\jobApp\Job.App\Job.App\Job.App.csproj;x64

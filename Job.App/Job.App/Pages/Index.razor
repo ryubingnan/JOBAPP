@@ -1,0 +1,37 @@
+﻿@page "/"
+@using Job.App.Dtos.Common
+@using Job.App.Dtos.JobInfoList
+@using Newtonsoft.Json;
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+<SurveyPrompt Title="How is Blazor working for you?" />
+
+
+@foreach (JobInfoListDto job in pagedJobs.Items)
+{
+    <h3>@job.Title</h3>
+}
+
+@code {
+    HttpClient client = new HttpClient();
+    PagedResultDto<JobInfoListDto> pagedJobs = new PagedResultDto<JobInfoListDto>()
+    {
+        Items = new List<JobInfoListDto>()
+    };
+
+    protected async override Task OnInitializedAsync()
+    {
+        var query = new JobInfoPagedQueryDto
+        {
+            PageSize = 3,
+            PageIndex = 1
+        };
+        var content = new StringContent(JsonConvert.SerializeObject(query), System.Text.Encoding.UTF8, "application/json");
+        
+        var response = await client.PostAsync("http://localhost:5000/job/getlist", content);
+        pagedJobs = JsonConvert.DeserializeObject<AjaxResponse<PagedResultDto<JobInfoListDto>>>(await response.Content.ReadAsStringAsync()).Data;
+    }
+}
